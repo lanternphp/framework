@@ -1,0 +1,7 @@
+vendor/
+node_modules/
+npm-debug.log
+composer.lock
+composer-test.*
+/phpunit.xml
+.phpunit.result.cache
