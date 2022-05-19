@@ -24,19 +24,23 @@ class SupportMultipleStacksTest extends TestCase
         Lantern::setUp(AppFeatures::class);
 
         $vendorAction = VendorAction::make();
-        $this->assertFalse($vendorAction->available());
+        $this->assertTrue($vendorAction->available());
 
         $appAction = AppAction::make();
-        $this->assertTrue($appAction->available());
+        $this->assertFalse($appAction->available()); // app action is not available
 
         /** @var GateContract $gate */
         $gate = app(GateContract::class);
 
-        // vendor action should be unavailable
-        $this->assertFalse($gate->check('vendor-name.my-action'));
+        // vendor action be available
+        $this->assertTrue($gate->check('vendor-name.my-action'));
 
-        // whilst the app action should be available
-        $this->assertTrue($gate->check('my-action'));
+        // whilst the app action should be unavailable
+        $this->assertFalse($gate->check('my-action'));
+
+        // and if I try to perform my vendor action without checking availability, should be all good
+        $newVendorAction = VendorAction::make();
+        $this->assertTrue($newVendorAction->perform()->successful());
     }
 
     /** @test */
@@ -56,7 +60,12 @@ class AppAction extends Action
 
     protected function availability(AvailabilityBuilder $availabilityBuilder)
     {
-        $availabilityBuilder->assertTrue(true);
+        $availabilityBuilder->assertTrue(false);
+    }
+
+    public function perform(): \Lantern\Features\ActionResponse
+    {
+        return $this->success();
     }
 }
 
@@ -74,7 +83,12 @@ class VendorAction extends Action
 
     protected function availability(AvailabilityBuilder $availabilityBuilder)
     {
-        $availabilityBuilder->assertTrue(false);
+        $availabilityBuilder->assertTrue(true);
+    }
+
+    public function perform(): \Lantern\Features\ActionResponse
+    {
+        return $this->success();
     }
 }
 

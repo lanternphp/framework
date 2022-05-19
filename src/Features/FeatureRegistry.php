@@ -130,11 +130,7 @@ class FeatureRegistry
             data_set(static::$actions, "$stack.$actionId", $actionsBuilder->feature());
             static::$actionsToStackMaps[$action] = $stack;
 
-            if ($stack !== 'default') {
-                $gateActionId = "$stack.$actionId";
-            } else {
-                $gateActionId = $actionId;
-            }
+            $gateActionId = static::getActionIdForGate($action);
 
             app(GateContract::class)->define($gateActionId, function ($user = null, ...$args) use ($action) {
                 if ($args && $args[0] instanceof ActionProxy) {
@@ -182,5 +178,33 @@ class FeatureRegistry
         }
 
         return 'default';
+    }
+
+    /**
+     * Returns the action id including any necessary stack, as used by Laravel’s gates.
+     *
+     * @param Action|string $action
+     * @return string
+     * @throws LanternException
+     * @internal do not use this method
+     */
+    public static function getActionIdForGate($action): string
+    {
+        $actionClass = is_object($action) ? get_class($action) : $action;
+        $actionId = $action::id();
+
+        if (!array_key_exists($actionClass, static::$actionsToStackMaps)) {
+            throw LanternException::actionNotDeclared($actionClass);
+        }
+
+        $stack = static::$actionsToStackMaps[$actionClass];
+
+        if ($stack !== 'default') {
+            $gateActionId = "$stack.$actionId";
+        } else {
+            $gateActionId = $actionId;
+        }
+
+        return $gateActionId;
     }
 }

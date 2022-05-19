@@ -32,6 +32,9 @@ class ActionProxy
         return call_user_func_array([$this, $name.'Proxy'], $arguments);
     }
 
+    /**
+     * @throws LanternException
+     */
     protected function prepareProxy(...$args): ActionResponse
     {
         if ($this->available === null) {
@@ -39,11 +42,11 @@ class ActionProxy
         }
 
         if ($this->available->denied()) {
-            throw LanternException::actionNotAvailable($this->action::id(), $this->available->message());
+            throw LanternException::actionNotAvailable(FeatureRegistry::getActionIdForGate($this->action), $this->available->message());
         }
 
         if (! method_exists($this->action, 'prepare')) {
-            throw LanternException::actionMethodMissing($this->action::id(), 'prepare');
+            throw LanternException::actionMethodMissing(FeatureRegistry::getActionIdForGate($this->action), 'prepare');
         }
 
         return call_user_func_array([$this->action, 'prepare'], $args);
@@ -56,11 +59,11 @@ class ActionProxy
         }
 
         if ($this->available->denied()) {
-            throw LanternException::actionNotAvailable($this->action::id(), $this->available->message());
+            throw LanternException::actionNotAvailable(FeatureRegistry::getActionIdForGate($this->action), $this->available->message());
         }
 
         if (! method_exists($this->action, 'perform')) {
-            throw LanternException::actionMethodMissing($this->action::id(), 'perform');
+            throw LanternException::actionMethodMissing(FeatureRegistry::getActionIdForGate($this->action), 'perform');
         }
 
         return $this->action->perform(...$args);
@@ -86,11 +89,15 @@ class ActionProxy
         return $this->available = $this->action->checkAvailability($user);
     }
 
+    /**
+     * @throws LanternException
+     */
     public function available($user = null): bool
     {
         $user = $this->getUser($user);
 
-        $check = app(GateContract::class)->forUser($user)->allows($this->action::id(), [$this]);
+        $check = app(GateContract::class)->forUser($user)->allows(FeatureRegistry::getActionIdForGate($this->action), [$this]);
+
         if (is_bool($check)) {
             $check = $check ? Response::allow() : Response::deny();
         }
@@ -109,11 +116,5 @@ class ActionProxy
         }
 
         return $user;
-    }
-
-    protected function getGuard()
-    {
-        // todo - add in ability to specify user guard for an action
-        return app('auth');
     }
 }
