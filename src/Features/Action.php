@@ -4,6 +4,7 @@ namespace Lantern\Features;
 
 use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Str;
+use Lantern\Lantern;
 
 /**
  * @method ActionResponse perform() – this method must be overridden with the main task of the action & must return an ActionResponse
@@ -82,7 +83,8 @@ abstract class Action
             return Response::deny(sprintf('Action %s: constraints failed', $this::id()));
         }
 
-        $availabilityBuilder = new AvailabilityBuilder($this, $user);
+        $builder = Lantern::availabilityBuilder();
+        $availabilityBuilder = new $builder($this, $user);
 
         $this->availability($availabilityBuilder);
 

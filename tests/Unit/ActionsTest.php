@@ -3,6 +3,8 @@
 # expanded the namespace to offer protection for utility classes below
 namespace LanternTest\Unit\ActionsTest;
 
+use Illuminate\Auth\Access\Response;
+use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 use Lantern\Features\Action;
 use Lantern\Features\AvailabilityBuilder;
 use Lantern\Features\ConstraintsBuilder;
@@ -10,7 +12,6 @@ use Lantern\Features\Feature;
 use Lantern\Lantern;
 use Lantern\LanternException;
 use LanternTest\TestCase;
-use Illuminate\Contracts\Auth\Access\Gate as GateContract;
 
 class ActionsTest extends TestCase
 {
@@ -74,6 +75,14 @@ class ActionsTest extends TestCase
         $this->assertFalse(
             $gate->forUser($user)->check('action-with-passing-availability')
         );
+    }
+
+    /** @test */
+    public function availabilityBuilderCanBeOverriddenWithAChildClass()
+    {
+        Lantern::setUp(AllFeatures::class);
+        Lantern::useCustomAvailabilityBuilder(CustomAvailabilityBuilder::class);
+        $this->assertTrue(ActionUsingCustomAvailabilityBuilder::make()->available());
     }
 
     /** @test */
@@ -154,6 +163,20 @@ class ActionWithPassingAvailability extends Action
     }
 }
 
+class ActionUsingCustomAvailabilityBuilder extends Action
+{
+    const GUEST_USERS = true;
+
+    /**
+     * @param CustomAvailabilityBuilder|AvailabilityBuilder $availabilityBuilder
+     * @return void
+     */
+    protected function availability(AvailabilityBuilder $availabilityBuilder)
+    {
+        $availabilityBuilder->assertHappy('happy');
+    }
+}
+
 class AllFeatures extends Feature
 {
     const ACTIONS = [
@@ -161,6 +184,7 @@ class AllFeatures extends Feature
         ActionWithPassingConstraint::class,
         ActionWithFailingAvailability::class,
         ActionWithPassingAvailability::class,
+        ActionUsingCustomAvailabilityBuilder::class,
     ];
 }
 
@@ -174,4 +198,20 @@ class FeatureWithMissingMethods extends Feature
     const ACTIONS = [
         ActionMissingMethods::class,
     ];
+}
+
+class CustomAvailabilityBuilder extends AvailabilityBuilder
+{
+    public function assertHappy($value, $failureMessage = 'value passed to `assertHappy` is sad'): self
+    {
+        $this->checks[] = function () use ($value, $failureMessage): Response {
+            if ($value == 'happy') {
+                return Response::allow();
+            }
+
+            return Response::deny($failureMessage);
+        };
+
+        return $this;
+    }
 }
