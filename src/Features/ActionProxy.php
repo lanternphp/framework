@@ -89,9 +89,6 @@ class ActionProxy
         return $this->available = $this->action->checkAvailability($user);
     }
 
-    /**
-     * @throws LanternException
-     */
     public function available($user = null): bool
     {
         $user = $this->getUser($user);
