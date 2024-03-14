@@ -10,6 +10,7 @@ use Lantern\Features\Feature;
 use Lantern\Lantern;
 use Lantern\LanternException;
 use LanternTest\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * A vendor who is using Lantern must be able to declare their Features separately from the Main app.
@@ -17,7 +18,7 @@ use LanternTest\TestCase;
  */
 class SupportMultipleStacksTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function twoStacksCanBeAddedProvidedTheyHaveDifferentStackNames()
     {
         Lantern::setUp(VendorFeatures::class);
@@ -43,7 +44,7 @@ class SupportMultipleStacksTest extends TestCase
         $this->assertTrue($newVendorAction->perform()->successful());
     }
 
-    /** @test */
+    #[Test]
     public function subFeaturesCannotDeclareTheirOwnStack()
     {
         $this->expectException(LanternException::class);

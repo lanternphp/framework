@@ -10,10 +10,11 @@ use Lantern\Features\FeatureRegistry;
 use Lantern\Lantern;
 use Lantern\LanternException;
 use LanternTest\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class FeaturesTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function aFeatureMustExtendTheBaseFeatureClassAndHaveOtherFeaturesOrActions()
     {
         $this->expectException(LanternException::class);
@@ -22,7 +23,7 @@ class FeaturesTest extends TestCase
         Lantern::setUp(BadFeatureNoBaseClass::class);
     }
 
-    /** @test */
+    #[Test]
     public function featureWithinAFeatureMustExist()
     {
         $this->expectException(LanternException::class);
@@ -31,7 +32,7 @@ class FeaturesTest extends TestCase
         Lantern::setUp(BadFeaturePointingToUnknownFeature::class);
     }
 
-    /** @test */
+    #[Test]
     public function aFeatureCannotBeEmpty()
     {
         $this->expectException(LanternException::class);
@@ -40,7 +41,7 @@ class FeaturesTest extends TestCase
         Lantern::setUp(BadFeatureEmpty::class);
     }
 
-    /** @test */
+    #[Test]
     public function aFeatureCanDeclareActions()
     {
         Lantern::setUp(GoodFeatureWithAction::class);
@@ -50,7 +51,7 @@ class FeaturesTest extends TestCase
         $this->assertTrue(in_array(new GoodFeatureWithAction, $features));
     }
 
-    /** @test */
+    #[Test]
     public function aFeatureCanOtherFeaturesWithActions()
     {
         Lantern::setUp(GoodFeatureWithAnotherFeature::class);
@@ -61,14 +62,14 @@ class FeaturesTest extends TestCase
         $this->assertTrue(in_array(new GoodFeatureWithAnotherFeature, $features));
     }
 
-    /** @test */
+    #[Test]
     public function aFeatureWithAFailingConstraintStopsTheAvailabilityOfAnyRelatedActions()
     {
         Lantern::setUp(GoodFeatureWithActionButFailingConstraint::class);
         $this->assertFalse(AnotherGoodAction::make()->available());
     }
 
-    /** @test */
+    #[Test]
     public function aFeatureWithAPassingConstraintDoesNotStopTheAvailabilityOfAnyRelatedActions()
     {
         Lantern::setUp(GoodFeatureWithAction::class);

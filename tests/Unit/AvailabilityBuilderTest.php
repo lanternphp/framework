@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Lantern\Features\Action;
 use Lantern\Features\AvailabilityBuilder;
 use LanternTest\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class AvailabilityBuilderTest extends TestCase
 {
@@ -28,7 +29,7 @@ class AvailabilityBuilderTest extends TestCase
         return app('auth.driver')->getProvider()->createModel();
     }
 
-    /** @test */
+    #[Test]
     public function canCheckAnAuthorisationGateFromLaravel()
     {
         $action = new class () extends Action {
@@ -48,7 +49,7 @@ class AvailabilityBuilderTest extends TestCase
         $this->assertStringContainsString('some checks failed', $checksMet->message());
     }
 
-    /** @test */
+    #[Test]
     public function canCheckAVarietyOfAssertions()
     {
         $action = new class () extends Action {
@@ -75,7 +76,7 @@ class AvailabilityBuilderTest extends TestCase
         $this->assertStringContainsString('some checks failed', $checksMet->message());
     }
 
-    /** @test */
+    #[Test]
     public function aMessageCanBePassedToEachAssertionToBeUsedToTellUsWhatFailed()
     {
         $action = new class () extends Action {
