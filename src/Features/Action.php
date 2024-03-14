@@ -37,6 +37,7 @@ abstract class Action
      */
     public static function make(...$dependencies): ActionProxy
     {
+        // @phpstan-ignore-next-line
         return new ActionProxy(new static(...$dependencies));
     }
 
