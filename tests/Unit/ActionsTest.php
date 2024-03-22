@@ -12,10 +12,11 @@ use Lantern\Features\Feature;
 use Lantern\Lantern;
 use Lantern\LanternException;
 use LanternTest\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ActionsTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function theIdOfAnActionCannotContainAFullStop()
     {
         $this->expectException(LanternException::class);
@@ -24,35 +25,35 @@ class ActionsTest extends TestCase
         Lantern::setUp(FeatureWithInvalidAction::class);
     }
 
-    /** @test */
+    #[Test]
     public function anActionIsUnavailableIfItsConstraintsFail()
     {
         Lantern::setUp(AllFeatures::class);
         $this->assertFalse(ActionWithFailingConstraint::make()->available());
     }
 
-    /** @test */
+    #[Test]
     public function anActionIsAvailableIfItsConstraintsPass()
     {
         Lantern::setUp(AllFeatures::class);
         $this->assertTrue(ActionWithPassingConstraint::make()->available());
     }
 
-    /** @test */
+    #[Test]
     public function anActionIsUnavailableIfItsAvailabilityFails()
     {
         Lantern::setUp(AllFeatures::class);
         $this->assertFalse(ActionWithFailingAvailability::make()->available());
     }
 
-    /** @test */
+    #[Test]
     public function anActionIsAvailableIfItsAvailabilityPasses()
     {
         Lantern::setUp(AllFeatures::class);
         $this->assertTrue(ActionWithPassingAvailability::make()->available());
     }
 
-    /** @test */
+    #[Test]
     public function availabilityCanBeCheckedThroughAGateInLaravel()
     {
         Lantern::setUp(AllFeatures::class);
@@ -61,7 +62,7 @@ class ActionsTest extends TestCase
         $this->assertTrue($gate->check('action-with-passing-availability'));
     }
 
-    /** @test */
+    #[Test]
     public function availabilityCanBeCheckedForDifferentUsers()
     {
         Lantern::setUp(AllFeatures::class);
@@ -77,7 +78,7 @@ class ActionsTest extends TestCase
         );
     }
 
-    /** @test */
+    #[Test]
     public function availabilityBuilderCanBeOverriddenWithAChildClass()
     {
         Lantern::setUp(AllFeatures::class);
@@ -85,7 +86,7 @@ class ActionsTest extends TestCase
         $this->assertTrue(ActionUsingCustomAvailabilityBuilder::make()->available());
     }
 
-    /** @test */
+    #[Test]
     public function cannotCallPrepareOnAnActionProxyWhenNotDeclaredOnTheAction()
     {
         $this->expectException(LanternException::class);
@@ -95,7 +96,7 @@ class ActionsTest extends TestCase
         ActionMissingMethods::make()->prepare();
     }
 
-    /** @test */
+    #[Test]
     public function cannotCallPerformOnAnActionProxyWhenNotDeclaredOnTheAction()
     {
         $this->expectException(LanternException::class);

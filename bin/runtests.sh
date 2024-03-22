@@ -10,9 +10,7 @@ cd ../
 echo "Current directory: $PWD"
 
 declare -a testbench_versions=(
-  "6.0" # Laravel 8
-  "7.0" # Laravel 9
-  "8.0" # Laravel 10
+  "9.0" # Laravel 11
 )
 
 ## now loop through the above array
@@ -26,7 +24,7 @@ do
    rm -rf phpunit.xml.dist
    cp composer.json composer-test.json
    cp phpunit-$testbench_version.xml phpunit.xml.dist
-   COMPOSER=composer-test.json /usr/bin/env composer require "orchestra/testbench:~$testbench_version.0" -q
+   COMPOSER=composer-test.json /usr/bin/env composer require --dev "orchestra/testbench:~$testbench_version.0" -q
 
    echo "Running phpunit"
    ./vendor/bin/phpunit || EXIT=$?

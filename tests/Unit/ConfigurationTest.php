@@ -4,10 +4,11 @@ namespace LanternTest\Unit;
 
 use Lantern\Lantern;
 use LanternTest\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ConfigurationTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function pathDirsTest()
     {
         $count = count(Lantern::pathDirs());

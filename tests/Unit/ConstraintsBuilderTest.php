@@ -7,10 +7,11 @@ use Lantern\Features\Constraints\ExecutableIsInstalled;
 use Lantern\Features\Constraints\ExtensionIsLoaded;
 use Lantern\Features\ConstraintsBuilder;
 use LanternTest\TestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 class ConstraintsBuilderTest extends TestCase
 {
-    /** @test */
+    #[Test]
     public function classExistsTest()
     {
         $constraint = new ClassExists(static::class);
@@ -20,7 +21,7 @@ class ConstraintsBuilderTest extends TestCase
         $this->assertFalse($constraint->isMet());
     }
 
-    /** @test */
+    #[Test]
     public function executableIsInstalledTest()
     {
         $constraint = new ExecutableIsInstalled('phpunit');
@@ -30,7 +31,7 @@ class ConstraintsBuilderTest extends TestCase
         $this->assertFalse($constraint->isMet());
     }
 
-    /** @test */
+    #[Test]
     public function extensionLoadedTest()
     {
         $firstExtension = get_loaded_extensions()[0];
@@ -41,7 +42,7 @@ class ConstraintsBuilderTest extends TestCase
         $this->assertFalse($constraint->isMet());
     }
 
-    /** @test */
+    #[Test]
     public function constraintsMetOnBuilderIfAllConstraintMet()
     {
         $firstExtension = get_loaded_extensions()[0];
@@ -56,7 +57,7 @@ class ConstraintsBuilderTest extends TestCase
         $this->assertTrue($builder->constraintsMet());
     }
 
-    /** @test */
+    #[Test]
     public function constraintsnotMetOnBuilderIfAnyConstraintNotMet()
     {
         $firstExtension = get_loaded_extensions()[0];
