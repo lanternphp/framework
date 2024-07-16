@@ -105,6 +105,19 @@ class ActionsTest extends TestCase
         Lantern::setUp(FeatureWithMissingMethods::class);
         ActionMissingMethods::make()->perform();
     }
+
+    #[Test]
+    public function canCallMethodsAndPropertiesOnActionThroughProxy()
+    {
+        Lantern::setUp(AllFeatures::class);
+        $action = ActionWithPropertiesAndMethodsToCall::make();
+
+        $this->assertTrue($action->visible);
+        $this->assertTrue($action->isVisible());
+        $action->visible = false;
+        $this->assertFalse($action->visible);
+        $this->assertFalse($action->isVisible());
+    }
 }
 
 
@@ -178,6 +191,17 @@ class ActionUsingCustomAvailabilityBuilder extends Action
     }
 }
 
+class ActionWithPropertiesAndMethodsToCall extends Action
+{
+    const GUEST_USERS = true;
+    public $visible = true;
+
+    public function isVisible()
+    {
+        return $this->visible;
+    }
+}
+
 class AllFeatures extends Feature
 {
     const ACTIONS = [
@@ -186,6 +210,7 @@ class AllFeatures extends Feature
         ActionWithFailingAvailability::class,
         ActionWithPassingAvailability::class,
         ActionUsingCustomAvailabilityBuilder::class,
+        ActionWithPropertiesAndMethodsToCall::class,
     ];
 }
 

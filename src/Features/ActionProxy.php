@@ -27,9 +27,23 @@ class ActionProxy
         $this->action = $action;
     }
 
+    public function __get(string $name)
+    {
+        return $this->action->$name;
+    }
+
+    public function __set($name, $value)
+    {
+        $this->action->$name = $value;
+    }
+
     public function __call($name, $arguments)
     {
-        return call_user_func_array([$this, $name.'Proxy'], $arguments);
+        if (method_exists($this, $name . 'Proxy')) {
+            return call_user_func_array([$this, $name . 'Proxy'], $arguments);
+        }
+
+        return call_user_func_array([$this->action, $name], $arguments);
     }
 
     /**
